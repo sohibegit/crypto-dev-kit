@@ -20,28 +20,32 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(ethAddressesClearCommand(context));
 }
 
-function ethAddressesClearCommand(context: vscode.ExtensionContext) {
-  return vscode.commands.registerCommand("crypto-dev-kit.ethAddressesClear", () => {
-    context.globalState.update("ethAddresses", []);
-    vscode.window.showInformationMessage("Ethereum addresses cleared.");
-  });
-}
-
-function ethAddressesFullHistoryCommand(context: vscode.ExtensionContext) {
-  return vscode.commands.registerCommand("crypto-dev-kit.ethAddressesFullHistory", async () => {
-    const ethAddresses = context.globalState.get("ethAddresses");
-    if (ethAddresses && Array.isArray(ethAddresses)) {
-      const addresses = JSON.stringify(ethAddresses, null, 2);
-      const uri = vscode.Uri.parse("preview-scheme://authority/eth-addresses-full-history.json");
-      previewProvider.updateContent(uri, addresses);
-      // Open the virtual document in the editor in preview mode
-      const doc = await vscode.workspace.openTextDocument(uri);
-      await vscode.window.showTextDocument(doc, {
-        preview: true, // Open in preview mode
-        viewColumn: vscode.ViewColumn.Beside,
-      });
-    } else {
-      vscode.window.showInformationMessage("No Ethereum addresses generated yet.");
+function generateEthAddressCommand(context: vscode.ExtensionContext) {
+  return vscode.commands.registerCommand("crypto-dev-kit.generateEthAddress", async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+      for (const selection of editor.selections) {
+        const position = selection.active;
+        const wallet = ethers.Wallet.createRandom();
+        const address = wallet.address;
+        const ethAddresses = context.globalState.get("ethAddresses");
+        if (ethAddresses && Array.isArray(ethAddresses)) {
+          ethAddresses.push({
+            ...wallet,
+            privateKey: wallet.privateKey,
+            createdAt: new Date(),
+          });
+          context.globalState.update("ethAddresses", ethAddresses);
+        } else {
+          context.globalState.update("ethAddresses", [
+            { ...wallet, privateKey: wallet.privateKey, createdAt: new Date() },
+          ]);
+        }
+        console.log({ address, position });
+        await editor.edit((editBuilder) => {
+          editBuilder.insert(position, address);
+        });
+      }
     }
   });
 }
@@ -73,30 +77,29 @@ function ethAddressesHistoryCommand(context: vscode.ExtensionContext) {
   });
 }
 
-function generateEthAddressCommand(context: vscode.ExtensionContext) {
-  return vscode.commands.registerCommand("crypto-dev-kit.generateEthAddress", () => {
-    const wallet = ethers.Wallet.createRandom();
-    const address = wallet.address;
+function ethAddressesFullHistoryCommand(context: vscode.ExtensionContext) {
+  return vscode.commands.registerCommand("crypto-dev-kit.ethAddressesFullHistory", async () => {
     const ethAddresses = context.globalState.get("ethAddresses");
     if (ethAddresses && Array.isArray(ethAddresses)) {
-      ethAddresses.push({
-        ...wallet,
-        privateKey: wallet.privateKey,
-        createdAt: new Date(),
+      const addresses = JSON.stringify(ethAddresses, null, 2);
+      const uri = vscode.Uri.parse("preview-scheme://authority/eth-addresses-full-history.json");
+      previewProvider.updateContent(uri, addresses);
+      // Open the virtual document in the editor in preview mode
+      const doc = await vscode.workspace.openTextDocument(uri);
+      await vscode.window.showTextDocument(doc, {
+        preview: true, // Open in preview mode
+        viewColumn: vscode.ViewColumn.Beside,
       });
-      context.globalState.update("ethAddresses", ethAddresses);
     } else {
-      context.globalState.update("ethAddresses", [
-        { ...wallet, privateKey: wallet.privateKey, createdAt: new Date() },
-      ]);
+      vscode.window.showInformationMessage("No Ethereum addresses generated yet.");
     }
-    const editor = vscode.window.activeTextEditor;
-    if (editor) {
-      const position = editor.selection.active;
-      editor.edit((editBuilder) => {
-        editBuilder.insert(position, address);
-      });
-    }
+  });
+}
+
+function ethAddressesClearCommand(context: vscode.ExtensionContext) {
+  return vscode.commands.registerCommand("crypto-dev-kit.ethAddressesClear", () => {
+    context.globalState.update("ethAddresses", []);
+    vscode.window.showInformationMessage("Ethereum addresses cleared.");
   });
 }
 
