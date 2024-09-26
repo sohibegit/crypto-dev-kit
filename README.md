@@ -1,71 +1,62 @@
-# crypto-dev-kit README
+# Crypto Dev Kit - VS Code Extension
 
-This is the README for your extension "crypto-dev-kit". After writing up a brief description, we recommend including the following sections.
+This VS Code extension, `crypto-dev-kit`, provides a set of commands to work with Ethereum addresses, including generating new addresses, viewing address history, and clearing previously generated addresses. The extension uses the `ethers.js` library to generate Ethereum addresses and stores them in VS Code's global state for persistence across sessions.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Generate Ethereum Address**: Creates a new random Ethereum address and inserts it at the current cursor position in the active editor.
+- **View Ethereum Address History**: Displays a list of previously generated Ethereum addresses in a preview window.
+- **View Full Ethereum Address History**: Shows the full history of generated Ethereum addresses along with their private keys.
+- **Clear Ethereum Address History**: Clears all stored Ethereum addresses from the global state.
 
-For example if there is an image subfolder under your extension project workspace:
 
-\!\[feature X\]\(images/feature-x.png\)
+## Commands
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+The following commands are available through the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) or by using custom keybindings.
 
-## Requirements
+1. **Generate Ethereum Address** (`crypto-dev-kit.generateEthAddress`):  
+   Generates a new random Ethereum address using `ethers.js` and inserts it into the current editor at the cursor position.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+2. **View Ethereum Address History** (`crypto-dev-kit.ethAddressesHistory`):  
+   Displays a history of previously generated Ethereum addresses (without private keys) in a preview window.
 
-## Extension Settings
+3. **View Full Ethereum Address History** (`crypto-dev-kit.ethAddressesFullHistory`):  
+   Shows the complete history of generated Ethereum addresses, including private keys, in a preview window. *Note: Be careful with private key exposure.*
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+4. **Clear Ethereum Address History** (`crypto-dev-kit.ethAddressesClear`):  
+   Clears the list of all previously generated Ethereum addresses.
 
-For example:
+## Usage
 
-This extension contributes the following settings:
+1. Open any file in VS Code.
+2. Use the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and type one of the commands mentioned above.
+3. If you use the `Generate Ethereum Address` command, the newly generated Ethereum address will be inserted into the editor at the current cursor position.
+4. For viewing the address history or full history, the addresses will be displayed in a virtual document opened in a side preview window.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## Code Structure
 
-## Known Issues
+- **`activate(context: vscode.ExtensionContext)`**: The entry point for the extension, registering all commands and the preview provider.
+- **`generateEthAddressCommand`**: Handles the generation of a new Ethereum address and inserts it into the active editor.
+- **`ethAddressesHistoryCommand`**: Retrieves the previously generated addresses and displays them in a preview window.
+- **`ethAddressesFullHistoryCommand`**: Shows the full history, including private keys, of all Ethereum addresses in a preview window.
+- **`ethAddressesClearCommand`**: Clears all stored Ethereum addresses from the global state.
+- **`PreviewContentProvider`**: Handles the rendering of Ethereum address history in a preview window.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## Dependencies
 
-## Release Notes
+- [`ethers`](https://docs.ethers.io/v5/) - A complete Ethereum library and wallet implementation.
 
-Users appreciate release notes as you update your extension.
+## How to Contribute
 
-### 1.0.0
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Submit a pull request with a detailed description of your changes.
 
-Initial release of ...
+## License
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+This project is licensed under the MIT License.
 
 ---
 
-## Following extension guidelines
+Feel free to modify this extension as per your development needs and enhance its functionality!
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
